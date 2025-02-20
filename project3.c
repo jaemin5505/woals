@@ -37,22 +37,33 @@ struct Product products[] = {
 
 const int productCount = sizeof(products) / sizeof(products[0]);
 int store_money = 1234000;
-void clearBuffer() {
-    while (getchar() != '\n');  // 입력 버퍼 비우기
+time_t startTime;
+
+void clearBuffer()
+{
+	 while(getchar() != '\n');
+
 }
+
 
 void showStock() 
 {
     printf("\n===== 재고 상태 =====\n");
     for (int i = 0; i < productCount; i++)
     {
-        printf("%d. %s (%d개)\n", i + 1, products[i].name, products[i].stock);
+        printf("%d. %s", i + 1, products[i].name);
+		for(int j = 0; j < products[i].stock; j++)
+		{
+			printf("*");
+		}
+		printf(" (%d개)\n", products[i].stock);
     }
 }
 
 void restockProduct() 
 {
-    int choice, quantity;
+    int choice;
+	int quantity;
     showStock();
     printf("\n입고할 제품 번호를 입력하세요 (취소: 0): ");
     scanf("%d", &choice);
@@ -72,90 +83,102 @@ int isAdult()
     return birthYear <= 2006;
 }
 
-void purchaseProduct(struct Product product) 
+void purchaseProduct(struct Product * product) 
 {
   if (product->stock <= 0) 
   {
         printf("\n해당 제품은 품절되었습니다!\n");
         return;
    }
-    if (product.adultOnly) 
+    if (product->adultOnly && !isAdult()) 
     {
-        if (!isAdult()) 
-        {
             printf("\n미성년자는 구매할 수 없습니다!\n");
             return;
-        }
-    }
-    
-     int paymentMethod;
-    printf("\n1. 카드 결제\n2. 현금 결제\n선택: ");
-    if (scanf("%d", &paymentMethod) != 1) {
-        printf("\n잘못된 입력입니다. 숫자를 입력하세요.\n");
-        clearBuffer();
-        return;
     }
 
-    if (paymentMethod == 1) {
-        store_money += product->price;
-    } else if (paymentMethod == 2) {
+    
+   int paymentMethod;
+    printf("\n1. 카드 결제\n2. 현금 결제\n선택: ");
+    if (scanf("%d", &paymentMethod) != 1)
+		{
+			printf("\n숫자를 입력하세요\n");
+			clearBuffer();
+			return;
+		}
+
+    if (paymentMethod == 1) 
+	{
+        store_money += product->price; //매출증가
+    } 
+	else if (paymentMethod == 2)
+		{
         int cashGiven;
         printf("\n현금을 투입하세요: ");
-        if (scanf("%d", &cashGiven) != 1 || cashGiven < product->price) {
-            printf("\n금액이 부족하거나 잘못된 입력입니다!\n");
-            clearBuffer();
+        if (scanf("%d", &cashGiven) != 1 || cashGiven < product -> price)
+		{
+			printf("\n금액이 부족하거나 잘못된 입력입니다\n");
+			return;
+		}
+ 
+	
+            int change = cashGiven - product->price;
+            store_money += product -> price;
+            printf("\n거스름돈: %d원\n", change);
+        } 
+	else 
+		{
+            printf("\n잘못된 입력입니다\n");
             return;
         }
-        int change = cashGiven - product->price;
-        store_money += product->price;
-        printf("\n거스름돈: %d원\n", change);
-    } else {
-        printf("\n잘못된 입력입니다.\n");
-        return;
-    }
-
-    product->stock--;  // 실제 재고 감소
-    printf("\n구매 완료! 남은 재고: %d개\n", product->stock);
+    
+    product->stock--;//실제 재고 감소
+    printf("\n구매 완료! 남은 재고: %d개\n", product -> stock);
 }
-
 
 void showProductList() {
   printf("\n===== 제품 목록 =====\n");
-    for (int i = 0; i < productCount; i++) {
+    for (int i = 0; i < productCount; i++) 
+	{
         printf("%d. %s (%d개)\n", i + 1, products[i].name, products[i].stock);
     }
 
     char search[30];
-    printf("\n검색할 제품명을 입력하세요 (종료: 종료): ");
-    scanf("%s", search);
+	while (1)
+	{	
+		 printf("\n검색할 제품명을 입력하세요 (종료: 종료): ");
+		 scanf("%s", search);
+		 if(strcmp(search,"종료") == 0)
+			 break;
 
-    while (strcmp(search, "종료") != 0) {
         int found = 0;
-        for (int i = 0; i < productCount; i++) {
-            if (strcasecmp(products[i].name, search) == 0) {
+        for (int i = 0; i < productCount; i++) 
+		{
+            if (strcasecmp(products[i].name, search) == 0) 
+			{
+				found = 1;
                 printf("\n===== 제품 정보 =====\n");
                 printf("제조회사: %s\n", products[i].company);
                 printf("제품명: %s\n", products[i].name);
                 printf("유통기한: %s\n", products[i].expiration);
                 printf("가격: %d원\n", products[i].price);
                 printf("19금 여부: %s\n", products[i].adultOnly ? "o 성인용" : "x 일반");
-                found = 1;
+                
                 
                 char choice[10];
                 printf("\n구매 또는 종료 입력: ");
                 scanf("%s", choice);
                 if (strcasecmp(choice, "구매") == 0) 
                 {
-                    purchaseProduct(products[i]);
+                    purchaseProduct(&products[i]);
                 }
                 break;
             }
         }
-        if (!found) {
+        if (!found) 
+		{
             printf("\n해당 제품을 찾을 수 없습니다.\n");
         }
-        printf("\n검색할 제품명을 입력하세요 (종료: 종료): ");
-        scanf("%s", search);
+        
     }
 }
 
@@ -190,6 +213,7 @@ int main() {
     struct User user = {"woals", "4482", "이재민", 26, "010-5505-3045"};
     char id[20];
     char password[20];
+	startTime = time(NULL);
 
     printf("아이디를 입력하세요: ");
     scanf("%s", id);
@@ -227,6 +251,11 @@ int main() {
     } else {
         printf("\n로그인 실패!\n");
     }
+  time_t endTime = time(NULL);
+  int elp = (endTime - startTime) / 60;
+  int ean = elp * 9200;
+
+  printf("총 급여: %d원\n", ean);
 
     return 0;
 }
