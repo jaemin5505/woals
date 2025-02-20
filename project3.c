@@ -37,6 +37,9 @@ struct Product products[] = {
 
 const int productCount = sizeof(products) / sizeof(products[0]);
 int store_money = 1234000;
+void clearBuffer() {
+    while (getchar() != '\n');  // 입력 버퍼 비우기
+}
 
 void showStock() 
 {
@@ -85,30 +88,36 @@ void purchaseProduct(struct Product product)
         }
     }
     
-   int paymentMethod;
+     int paymentMethod;
     printf("\n1. 카드 결제\n2. 현금 결제\n선택: ");
-    scanf("%d", &paymentMethod);
+    if (scanf("%d", &paymentMethod) != 1) {
+        printf("\n잘못된 입력입니다. 숫자를 입력하세요.\n");
+        clearBuffer();
+        return;
+    }
+
     if (paymentMethod == 1) {
-        store_money -= product->price;
+        store_money += product->price;
     } else if (paymentMethod == 2) {
         int cashGiven;
         printf("\n현금을 투입하세요: ");
-        scanf("%d", &cashGiven);
-        if (cashGiven >= product->price) {
-            int change = cashGiven - product->price;
-            store_money += product->price;
-            printf("\n거스름돈: %d원\n", change);
-        } else {
-            printf("\n금액이 부족합니다!\n");
+        if (scanf("%d", &cashGiven) != 1 || cashGiven < product->price) {
+            printf("\n금액이 부족하거나 잘못된 입력입니다!\n");
+            clearBuffer();
             return;
         }
+        int change = cashGiven - product->price;
+        store_money += product->price;
+        printf("\n거스름돈: %d원\n", change);
     } else {
         printf("\n잘못된 입력입니다.\n");
         return;
     }
-    product->stock--;
+
+    product->stock--;  // 실제 재고 감소
     printf("\n구매 완료! 남은 재고: %d개\n", product->stock);
 }
+
 
 void showProductList() {
   printf("\n===== 제품 목록 =====\n");
