@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
-  
+#define CLEAR_SCREEN "clear"
 
 struct User {
     char id[20];
@@ -19,6 +19,7 @@ struct Product {
     char expiration[20];
     int price;
     int adultOnly;
+    int stock;
 };
 
 struct Product products[] = {
@@ -52,7 +53,8 @@ void restockProduct()
     showStock();
     printf("\n입고할 제품 번호를 입력하세요 (취소: 0): ");
     scanf("%d", &choice);
-    if (choice < 1 || choice > productCount) return;
+    if (choice < 1 || choice > productCount) 
+      return;
     printf("입고할 수량을 입력하세요: ");
     scanf("%d", &quantity);
     products[choice - 1].stock += quantity;
@@ -83,37 +85,39 @@ void purchaseProduct(struct Product product)
         }
     }
     
-    int paymentMethod;
+   int paymentMethod;
     printf("\n1. 카드 결제\n2. 현금 결제\n선택: ");
     scanf("%d", &paymentMethod);
-
-    if (paymentMethod == 1) { // 카드 결제
-        store_money -= product.price;
-        printf("\n결제 성공! 가게 잔고: %d원\n", store_money);
-    } else if (paymentMethod == 2) { // 현금 결제
+    if (paymentMethod == 1) {
+        store_money -= product->price;
+    } else if (paymentMethod == 2) {
         int cashGiven;
         printf("\n현금을 투입하세요: ");
         scanf("%d", &cashGiven);
-        if (cashGiven >= product.price) {
-            int change = cashGiven - product.price;
-            store_money += product.price;
-            printf("\n결제 완료! 거스름돈: %d원, 가게 잔고: %d원\n", change, store_money);
+        if (cashGiven >= product->price) {
+            int change = cashGiven - product->price;
+            store_money += product->price;
+            printf("\n거스름돈: %d원\n", change);
         } else {
             printf("\n금액이 부족합니다!\n");
+            return;
         }
     } else {
         printf("\n잘못된 입력입니다.\n");
+        return;
     }
+    product->stock--;
+    printf("\n구매 완료! 남은 재고: %d개\n", product->stock);
 }
 
 void showProductList() {
-    printf("\n===== 제품 목록 =====\n");
+  printf("\n===== 제품 목록 =====\n");
     for (int i = 0; i < productCount; i++) {
-        printf("%d. %s\n", i + 1, products[i].name);
+        printf("%d. %s (%d개)\n", i + 1, products[i].name, products[i].stock);
     }
 
     char search[30];
-    printf("\n검색할 제품명을 또는 종료 입력: ");
+    printf("\n검색할 제품명을 입력하세요 (종료: 종료): ");
     scanf("%s", search);
 
     while (strcmp(search, "종료") != 0) {
@@ -131,7 +135,8 @@ void showProductList() {
                 char choice[10];
                 printf("\n구매 또는 종료 입력: ");
                 scanf("%s", choice);
-                if (strcasecmp(choice, "구매") == 0) {
+                if (strcasecmp(choice, "구매") == 0) 
+                {
                     purchaseProduct(products[i]);
                 }
                 break;
