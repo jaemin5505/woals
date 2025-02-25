@@ -1,23 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef struct Node
-{
+typedef struct Node{
 	char name[10];
-	struct Node * link;
-}Node;
-int add(Node ** head, char * str)
+	struct Node* link;
+} Node;
+int add(Node ** head,char * str)
 {
 	Node * node = (Node*)malloc(sizeof(Node));
-	strcpy(node->name, str);
+	strcpy(node->name,str);
 
-	if(*head==NULL)
-	{
+	if(*head==NULL) {
 		*head = node;
-		node->link=NULL;
+		node->link = NULL;
 	}
-	else
-	{
+	else {
 		Node * current = *head;
 		while(current->link!=NULL)
 		{
@@ -26,7 +23,6 @@ int add(Node ** head, char * str)
 		current->link=node;
 		node->link=NULL;
 	}
-
 	return 0;
 }
 
@@ -35,25 +31,81 @@ void print(Node * head)
 	Node * current = head;
 	while(current!=NULL)
 	{
-		printf("%s, ", current->name);
+		printf("%s, ",current->name);
 		current=current->link;
 	}
 	printf("\n");
 	return;
 }
+
 void clear(Node ** head)
 {
-	Node * current = *head;
+	Node * current= *head;
 	while(current!=NULL)
 	{
 		Node * link = current->link;
 		free(current);
 		current = link;
 	}
-	*head = NULL;
+	*head=NULL;
 }
-int insert(Node ** head, int index, char * str)
+
+int insert(Node ** head, int index, char*str)
 {
+	Node * node = (Node*)malloc(sizeof(Node));
+	strcpy(node->name,str);
+
+	if(*head==NULL) {
+		*head = node;
+		node->link = NULL;
+	}
+	else if(index==0) {
+		node->link = (*head)->link;
+		*head = node;
+	}
+	else {
+		Node * current = *head;
+		Node * prev = NULL;
+		for(int i=0; i<index; i++)
+		{
+			if(current==NULL) 
+			{
+				free(node);
+				return -1;
+			}
+			prev = current;
+			current=current->link;
+		}
+		node->link = prev->link;
+		prev->link = node;
+	}
+	return 0;
+}
+
+int delete(Node ** head, int index)
+{
+	if(*head==NULL) {
+		return -1;
+	}
+	else if(index==0) {
+		Node * node = *head;
+		*head = node->link;
+		free(node);
+	}
+	else {
+		Node * current = *head;
+		Node * prev = NULL;
+		for(int i=0; i<index; i++)
+		{
+			if(current==NULL) {
+				return -1;
+			}
+			prev = current;
+			current=current->link;
+		}
+		prev->link = current->link;
+		free(current);
+	}
 	return 0;
 }
 
@@ -61,16 +113,16 @@ int main()
 {
 	Node * head = NULL;
 
-	add(&head, "Mon");
-	add(&head, "Fri");
-	add(&head, "Sun");
+	add(&head,"Mon");
+	add(&head,"Fri");
+	add(&head,"Sun");
 	print(head);
 
 	insert(&head,1,"Thu");
 	print(head);
 
-	clear(&head);
+	delete(&head,2);
 	print(head);
-	return 0;
-}
+
+	clear(&head);
 
