@@ -17,7 +17,7 @@ void insertMiddleNode(linkedList_h*Cl, listNode*pre, char*x);
 void deleteNode(linkedList_h*Cl, listNode*old);
 listNode*searchNode(linkedList_h*CL, char*x);
 
-#define _CRT_SECURE_NOWARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include "CircularLinkedList.h"
@@ -68,6 +68,7 @@ void insertFirstNode(linkedList_h*CL,char*x)
 			temp = temp -> link;
 		newNode -> link = temp -> link;
 		temp -> link = newNode;
+		CL -> head = newNode;
 	}
 }
 
@@ -133,7 +134,7 @@ listNode* searchNode(linkedList_h* CL, char* x)
 	return NULL;
 }
 
-#include "CircularSinkedList.h"
+#include "CircularLinkedList.h"
 
 int main()
 {
@@ -143,7 +144,11 @@ int main()
 	CL = createLinkedList_h();
 	printf("(1) 원형 연결 리스트 생성하기! \n");
 	printList(CL);
-
+	
+	printf("\n (2) 원형 연결 리스트 [월]삽입하기! \n");
+	insertFirstNode(CL, "월");
+	printList(CL);
+	
 	printf("\n (3) 원형 연결 리스트 [월] 노드뒤에 [수] 삽입하기! \n");
 	p = searchNode(CL, "월"); insertMiddleNode(CL, p, "수");
 	printList(CL);
