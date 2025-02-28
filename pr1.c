@@ -131,9 +131,9 @@ void display_books(TreeNode *node) {
     }
 }
 int main() {
-    Book book1 = {1, "C Programming", "Dennis Ritchie", "IT"};
-    Book book2 = {2, "Data Structures", "Mark Weiss", "IT"};
-    Book book3 = {3, "Harry Potter", "J.K. Rowling", "Literature"};
+    Book book1 = {1, "C 프로그래밍", "데니스 리치", "IT"};
+    Book book2 = {2, "자료구조", "이지영", "IT"};
+    Book book3 = {3, "해리포터", "J.K. 롤링", "문학"};
 
     printf("=== 도서 목록 ===\n");
     print_book(&book1);
