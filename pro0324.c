@@ -41,6 +41,11 @@ k = 3
 knn = KNeighborsClassifier(n_neighbors=k)
 knn.fit(X, y)
 
+# 훈련 정확도 계산 추가
+y_train_pred = knn.predict(X)
+train_accuracy = np.mean(y_train_pred == y)
+print(f"훈련 정확도: {train_accuracy:.2f}")
+
 # 새로운 개 5마리 데이터 생성 및 예측
 dog_length = np.random.randint(1, 100, size=5)
 dog_height = np.random.randint(1, 70, size=5)
